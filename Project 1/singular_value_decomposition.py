@@ -1,3 +1,4 @@
+from math import sqrt
 import numpy as np
 from numpy import matmul, diag
 from scipy.linalg import eigh, svd
@@ -12,60 +13,57 @@ def SVD(A : np.ndarray):
     3. The matrix inverse using the SVD decomposition
     Dimensions: U: MxM, sigma: MxN, V: NxN
     """
-    # @TODO: test current function with test input
+
+    results = defaultdict(dict)
     M, N = A.shape
-    tol = 1*10**-5 # tolerance for singular values to be considered 0
-    results = defaultdict(dict) # return variable
+    tol = 1*10**-5 # treat values below this threshold to zero
 
     # first get U, V matricies and eigenvalues
-    eigenvalues, V = eigh(matmul(A.T, A)) # eigh sorts eigenvalues in ascending order (only to for symmetric matrices)
-    eigenvalues, U = eigh(matmul(A, A.T)) 
-    
-    # change eigenvalues to descending order and change V, U accordingly
+    eigenvalues, U = eigh(matmul(A, A.T))
+    _, V = eigh(matmul(A.T, A))
+
+    # sort eigenvalues and corresponding U and V eigenvectors in descending order
     eigenvalues = np.flip(eigenvalues)
-    V = np.flip(V, axis=1)  
-    U = np.flip(U, axis=1) 
+    U = np.flip(U, axis=1)
+    V = np.flip(V, axis=1)
+
+    # calculates sigma matrix
     sigma = np.zeros((M, N))
+    for i in range(M):
+        if eigenvalues[i] > tol:
+            sigma[i][i] = sqrt(eigenvalues[i])
 
-    isInvertible = all(abs(eigenvalues) > tol) # check if matrix is invertible
-
-    # now calculate singular matrix
-    for i in range(min(M, N)):
-        if abs(eigenvalues[i]) > tol :
-            # if value is lower than tol we treat it as 0
-            sigma[i][i] = np.sqrt(eigenvalues[i])
-    
-    # calculate inverse of sigma for A inverse
-    sigma_inverse = np.zeros((M, N))
-    for i in range(min(M, N)):
+    # calculates inverse of sigma matrix for A^-1
+    sigmaInverse = np.zeros((M, N))
+    for i in range(M):
         if sigma[i][i] != 0:
-            sigma_inverse[i][i] = 1 / sigma[i][i]
+            sigmaInverse[i][i] = 1 / sigma[i][i]
+    
+    if all(eigenvalues > tol): 
+    # only calculate A^-1 if all eigenvalues are greater than "zero"
+        results["inverse"] = matmul(matmul(U.T, sigmaInverse), V)
+    
+    # make sure that the signs of the columns of U and V match correctly
+    same_sign = np.sign(((matmul(A, V))[0] * (matmul(U, sigma)[0])))
+    V = V * same_sign.reshape(1, -1)
 
-    # calculate inverse of A if A is invertible
-    if isInvertible:
-        results["inverse"] = matmul(matmul(U.T, sigma_inverse), V)
-
+    # return results
+    conditionNumber = diag(sigma).max() / diag(sigma).min() if diag(sigma).min() != 0 else float("inf")
+    results["conditionNumber"] = conditionNumber
     results["U"] = U
     results["sigma"] = sigma
     results["V"] = V
-    try:
-        if isInvertible:
-            results["conditionNumber"] = diag(sigma).max() / diag(sigma).min()
-        else:
-            results["conditionNumber"] = diag(sigma).max() / diag(sigma).min()
-    except ZeroDivisionError:
-        # if dividion by 0, that means condition number should be extremely large
-        results["conditionNumber"] = float("inf") # l2 norm condition number 
     return results
 
-tall = np.array([[-3, 1],[6, -2], [6, -2]])
+
+tall1 = np.array([[-3, 1],[6, -2], [6, -2]])
+tall2 = np.array([[-3, 1],[6, -2], [6, 4]])
 wide = np.array([[3, 2, 2],[2, 3, -2]])
 square = np.array([[-3, 1, 2],[6, -2, 3], [6, -2, 1]])
 tallMatricies = np.array([])
+
 for i in range(5):
-    tallMatrix = np.random.randint(1, 11, size=(4, 3))
+    tallMatrix = np.random.randint(1, 11, size=(3, 4))
     result = SVD(tallMatrix)
-    # check if decomposition is correct
     print("matrix: ", tallMatrix)
     print("re-composed:", matmul(result["U"], matmul(result["sigma"], result["V"].T)))
-# U, s, V = svd(A)
