@@ -56,14 +56,16 @@ def SVD(A : np.ndarray):
     return results
 
 
-tall1 = np.array([[-3, 1],[6, -2], [6, -2]])
-tall2 = np.array([[-3, 1],[6, -2], [6, 4]])
-wide = np.array([[3, 2, 2],[2, 3, -2]])
-square = np.array([[-3, 1, 2],[6, -2, 3], [6, -2, 1]])
-tallMatricies = np.array([])
+# used for testing
 
-for i in range(5):
-    tallMatrix = np.random.randint(1, 11, size=(3, 4))
-    result = SVD(tallMatrix)
-    print("matrix: ", tallMatrix)
-    print("re-composed:", matmul(result["U"], matmul(result["sigma"], result["V"].T)))
+# tall1 = np.array([[-3, 1],[6, -2], [6, -2]])
+# tall2 = np.array([[-3, 1],[6, -2], [6, 4]])
+# wide = np.array([[3, 2, 2],[2, 3, -2]])
+# square = np.array([[-3, 1, 2],[6, -2, 3], [6, -2, 1]])
+# tallMatricies = np.array([])
+
+# for i in range(5):
+#     tallMatrix = np.random.randint(1, 11, size=(3, 4))
+#     result = SVD(tallMatrix)
+#     print("matrix: ", tallMatrix)
+#     print("re-composed:", matmul(result["U"], matmul(result["sigma"], result["V"].T)))
