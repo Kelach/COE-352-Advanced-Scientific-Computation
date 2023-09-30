@@ -1,27 +1,60 @@
-# Write MATLAB or PYTHON software that will calculate (1) the equilibrium displacements, (2) the internal stresses and (3) the elongations  of a spring/mass system using the 3 steps discussed in class and in the book. Solve the force balance first, then back-calculate the elongation and internal stress vectors using the displacements.  Your code should be created in a general way where the user will input the following: the number of springs/masses, the spring constants for each spring, the masses, and which boundary condition to apply.   Your code should allow the user to apply one or two fixed ends. 
+import numpy as np
+from numpy import array, zeros, diag, eye, matmul
+from SVD import SVD
 
-# For this project, you will need to solve Ku=f.  You will calculate the condition number of K by  (1) calculating and printing the singular values (and eigenvalues) using YOUR SVD algorithm, and (2) calculating and printing a l2-condition number.  Do not use a software call to calculate a condition number.  USE YOUR SVD ROUTINE TO SOLVE THE KU=F SYSTEM!
+# @TODO: fix matrix inverse signing issue + add docstrings w GPT 
 def main():
     """
-    Main function for Project 1. This function will calculate the equilibrium
-    displacements, the internal stresses, and the elongations of a spring/mass
-    system using thew 3 steps discussed in class and in the book. Solves the
-    force balance first, then back-calculates the elongation and internal
-    stress vectors using the displacements. This function is created in a
-    general way where the user will input the following: the number of
-    springs/masses, the spring constants for each spring, the masses, and
-    which boundary condition to apply. This function allows the user to apply
-    one or two fixed ends.
     """
-    
-    N = eval(input("Enter the number of springs/masses: "))
-    spring_constants = eval(input("Enter the spring constants for each spring: "))
-    masses = eval(input("Enter the masses: "))
-    conditions = eval(input("Enter the boundary conditions to apply: "))
+    # collect user input
+    springs = input("Enter your spring constants (N/m): ")
+    masses = input("Enter your masses (kg): ")
 
+    # process input
+    masses = array([float(mass) for mass in masses.split(" ")])
+    springs = array([float(spring) for spring in springs.split(" ")])
 
+    # defines our principal dimensions
+    M, N = len(springs), len(masses) 
 
-    
+    # constructing A matrix (elongations)
+    A = zeros((M, N))
+    A += A + eye(M, N, k=0) + -1*eye(M, N, k=-1) # adds elongations
 
-    # main function
-    pass
+    # constructing C matrix (constituent matrix)
+    C = diag(springs)
+
+    # constructing force vectors (forces)
+    forces = masses*9.81
+
+    # constructing stiffness matrix (K)
+    K = matmul(A.T, matmul(C, A)) # stiffness matrix
+
+    # solving system
+    try:
+        svdResults = SVD(K) # calls custom SVD function
+        if svdResults.get("inverse") is None:
+            raise Exception
+    except:
+        # if K matrix is not invertible, the system cannot be solved
+        print(f"""ERROR - SYSTEM IS NOT SOLVABLE""")
+        return
+    displacements = matmul(svdResults.get("inverse"), forces) 
+    elongations = matmul(A, displacements)
+    internalStresses = matmul(C, elongations)
+
+    print(f"""
+SYSTEM SOLVED:
+{"-"*50}
+
+The displacements are: {displacements}
+The elongations are: {elongations}
+The internal stresses are: {internalStresses}
+{"="*50}
+
+Condition number (L2): {svdResults.get("conditionNumber")}
+Singular values: {diag(svdResults.get("sigma"))}
+Eigenvalues: {diag(svdResults.get("sigma")**2)}
+""")
+
+main()
