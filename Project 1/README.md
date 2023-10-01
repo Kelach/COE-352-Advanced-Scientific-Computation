@@ -31,7 +31,7 @@ The program works by solving the linear system equations that models the spring-
 
     f = Ku
 
-Where f is the force vector (assumed to only be the force of gravity), K is the stiffness matrix, and u is the displacement vector. The stiffness matrix is constructed using the spring constants and masses given by the user. Rearranging the terms allows us to solve for the displacement vector u:
+Where f is the force vector (due to gravity), K is the stiffness matrix, and u is the displacement vector. The stiffness matrix is constructed using the spring constants and masses given by the user. Rearranging the terms allows us to solve for the displacement vector u:
 
 
     u = K^-1 * f
@@ -102,7 +102,7 @@ python equilibrium_solve.py
 ## Discussion (Free-Free System)
 You'll notice that the solver will return an error when the number of springs given is less than the number of masses. To explain why this is imagine the following:
 
-Let's use the Free-Free System and above to construct our stiffness matrix. This will yeild:
+Let's use the Free-Free System and above to construct our stiffness matrix. This will yield:
 
 ```
     --   --
@@ -110,7 +110,7 @@ Let's use the Free-Free System and above to construct our stiffness matrix. This
 K = | 0 0 |
     --   --
 ```
-If we wish to solve the system `f = Ku`. However we see that our K matrix has a rank of one (there is only one linearly independent column/row) but requires a rank of 2. Therefore our stiffness matrix, in this example, is not full rank, and `K^-1` cannot be computed nor the spring-mass system be solved. This aligns with our physical expectations too. A free-free spring-mass system implies that the masses connected to the springs are traversing through space freely. Thus, the system will always be unsolvable when the number of springs is less than the number of masses, and the program will return an error.
+If we wish to solve the system `f = Ku`. However, we see that our K matrix has a rank of one (there is only one linearly independent column/row) but requires a rank of 2. Therefore our stiffness matrix, in this example, is not full rank, and `K^-1` cannot be computed nor the spring-mass system be solved. This aligns with our physical expectations too. A free-free spring-mass system implies that the masses connected to the springs are traversing through space freely. Thus, the system will always be unsolvable when the number of springs is less than the number of masses, and the program will return an error.
 
 ## Dependencies
 This code relies on the following external libraries:
