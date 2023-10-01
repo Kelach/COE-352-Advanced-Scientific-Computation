@@ -1,7 +1,7 @@
 from math import sqrt
 import numpy as np
 from numpy import matmul, diag
-from scipy.linalg import eigh, svd
+from scipy.linalg import eigh
 from collections import defaultdict
 
 
