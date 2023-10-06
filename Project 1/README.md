@@ -110,7 +110,17 @@ Let's use the Free-Free System and above to construct our stiffness matrix. This
 K = | 0 0 |
     --   --
 ```
-If we wish to solve the system `f = Ku`. However, we see that our K matrix has a rank of one (there is only one linearly independent column/row) but requires a rank of 2. Therefore our stiffness matrix, in this example, is not full rank, and `K^-1` cannot be computed nor the spring-mass system be solved. This aligns with our physical expectations too. A free-free spring-mass system implies that the masses connected to the springs are traversing through space freely. Thus, the system will always be unsolvable when the number of springs is less than the number of masses, and the program will return an error.
+If we wish to solve the system `f = Ku`. However, we see that our `K` matrix has a rank of one (there is only one linearly independent column/row) but requires a rank of 2. Therefore our stiffness matrix, in this example, is not full rank, and `K^-1` cannot be computed nor the spring-mass system be solved. In addition, we can also see that the `K` matrix is not full rank because its null space is not the zero vector. For example:
+
+```
+      --   --
+      | 1 0 |
+{0} = | 0 0 | * {0, 1}^T
+      --   --
+```
+The null space of this matrix is vector span `[0 1]`. This means that the matrix `K` will map the vector `[0 1]` to the zero vector.
+
+This aligns with our physical interpretations of the system too. A free-free spring-mass system implies that the masses connected to the springs are traversing through space freely. This means that the system is not constratined and the masses can move in any direction. Therefore, the position of the masses would be unknown.         
 
 ## Dependencies
 This code relies on the following external libraries:
