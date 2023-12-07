@@ -16,6 +16,13 @@
 ## Introduction
 The finite element method (FEM) is a numerical technique for finding approximate solutions to boundary value problems for partial differential equations. It uses variational methods (the calculus of variations) to minimize an error function and produce a stable solution. Analogous to the idea that connecting many tiny straight lines can approximate a larger circle, FEM encompasses all the methods for connecting many simple element equations over many small subdomains, named finite elements, to approximate a more complex equation over a larger domain. FEM is a good choice for analyzing problems over complicated domains (like cars and oil pipelines), when the domain changes (as during a solid state reaction with a moving boundary), when the desired precision varies over the entire domain, or when the solution lacks smoothness. FEM allows for the solution of very large problems with reasonable computer resources; it is also the only approach for solving complex problems in, for example, 3D heat transfer or fluid dynamics as used in computer aided engineering, and nonlinear problems like implicit solvation as in computational chemistry. This code implements the continuous Galerkin finite element method for the 1D heat equation and applies Dirchelet Boundary Conditions.
 
+- Scripts:
+    - `main.py`: This script runs the CG-FEM approximation for the 1D heat equation using both the forward and backward Euler time-descretization methods. The results are compared to the analytical solution of the heat equation.
+    `input.py`: This script contains the input parameters for the CG-FEM approximation.
+    - `FEA.py`: This script contains the functions used to run the CG-FEM approximation for the 1D heat equation.
+    - `experiment.py`: This script contains the functions used to run the experiments for the 1D heat equation.
+    - `integrator.py`: This script contains the functions used to run the numerical integration for the 1D heat equation.
+
 ## Mathematical Model
 The heat equation is a parabolic partial differential equation that describes the distribution of heat (or variation in temperature) in a given region over time. For a function u(x,t) that describes the temperature distribution over the rod, the heat equation this code solves is given by:
 $$ u_t - u_{xx} = f(x,t) $$
